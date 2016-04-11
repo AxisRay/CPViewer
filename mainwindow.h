@@ -8,6 +8,7 @@
 #include <vtkRenderer.h>
 #include <QMainWindow>
 #include "EasyImageSlice.h"
+#include "EasyVolumeRender.h"
 
 namespace Ui {
 class MainWindow;
@@ -31,20 +32,32 @@ private:
     vtkSmartPointer<vtkRenderWindow> sagittalWin;
     vtkSmartPointer<vtkRenderWindow> coronalWin;
 
-    vtkSmartPointer<vtkRenderer> renderRen;
+    vtkSmartPointer<vtkRenderer> ctRen;
+    vtkSmartPointer<vtkRenderer> optRen;
+
     vtkSmartPointer<vtkRenderer> axialRen;
     vtkSmartPointer<vtkRenderer> sagittalRen;
     vtkSmartPointer<vtkRenderer> coronalRen;
     EasyImageSlice* ct_slice;
     EasyImageSlice* opt_slice;
+    EasyVolumeRender* ct_render;
+    EasyVolumeRender* opt_render;
 
     void InitSliceViewer(EasyImageSlice* slice);
     void InitRenderWin(vtkRenderWindow* win);
+    void InitVolumeRender();
+    void InitSlider(int *extent);
 private slots:
     void on_pbLoadCT_clicked();
     void on_pbLoadOPT_clicked();
 
+    void UpdateSlice();
 
+    void on_hsAxisX_valueChanged(int value);
+
+    void on_hsAxisY_valueChanged(int value);
+
+    void on_hsAxisZ_valueChanged(int value);
 };
 
 #endif // MAINWINDOW_H

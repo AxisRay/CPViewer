@@ -29,7 +29,7 @@ EasyImageSlice::~EasyImageSlice() {
 }
 void EasyImageSlice::InitReslice(vtkImageResliceToColors* reslice,SliceDirection direction) {
 
-    double center[3];
+
     for (int i = 0; i < 3; ++i) {
         center[i] = origin[i] + spacing[i] * 0.5 * (extent[i*2] + extent[i*2+1]);
     }
@@ -75,9 +75,11 @@ void EasyImageSlice::InitColor() {
             colorTable->SetSaturationRange(0.0,0.0);
             break;
         case OPT:
-            colorTable->SetTableRange(ScalarRange[1]/5,ScalarRange[1]);
+            colorTable->SetTableRange(ScalarRange[1]/10,4*ScalarRange[1]/5);
             colorTable->SetHueRange(0.0,1.0);
             colorTable->SetAlphaRange(0.8,1.0);
+            colorTable->SetSaturationRange(1.0,1.0);
+            colorTable->SetValueRange(0.5,1.0);
             colorTable->SetBelowRangeColor(1.0,1.0,1.0,0.0);
             colorTable->SetUseBelowRangeColor(1);
             break;
@@ -100,4 +102,9 @@ vtkSmartPointer<vtkImageActor> EasyImageSlice::getActor(SliceDirection d){
             break;
     }
     return actor;
+}
+void EasyImageSlice::SetResliceAxesOrigin(double x, double y, double z){
+    axialReslice->SetResliceAxesOrigin(x,y,z);
+    sagittalReslice->SetResliceAxesOrigin(x,y,z);
+    coronalReslice->SetResliceAxesOrigin(x,y,z);
 }

@@ -21,6 +21,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
@@ -46,6 +47,9 @@ public:
     QHBoxLayout *horizontalLayout_5;
     QLineEdit *tbx_OPT;
     QPushButton *pbLoadOPT;
+    QSlider *hsAxisX;
+    QSlider *hsAxisY;
+    QSlider *hsAxisZ;
     QTabWidget *tabWidget;
     QWidget *tab_CT;
     QWidget *tab_OPT;
@@ -135,6 +139,33 @@ public:
 
         verticalLayout->addLayout(horizontalLayout_5);
 
+        hsAxisX = new QSlider(centralwidget);
+        hsAxisX->setObjectName(QStringLiteral("hsAxisX"));
+        hsAxisX->setEnabled(false);
+        sizePolicy.setHeightForWidth(hsAxisX->sizePolicy().hasHeightForWidth());
+        hsAxisX->setSizePolicy(sizePolicy);
+        hsAxisX->setOrientation(Qt::Horizontal);
+
+        verticalLayout->addWidget(hsAxisX);
+
+        hsAxisY = new QSlider(centralwidget);
+        hsAxisY->setObjectName(QStringLiteral("hsAxisY"));
+        hsAxisY->setEnabled(false);
+        sizePolicy.setHeightForWidth(hsAxisY->sizePolicy().hasHeightForWidth());
+        hsAxisY->setSizePolicy(sizePolicy);
+        hsAxisY->setOrientation(Qt::Horizontal);
+
+        verticalLayout->addWidget(hsAxisY);
+
+        hsAxisZ = new QSlider(centralwidget);
+        hsAxisZ->setObjectName(QStringLiteral("hsAxisZ"));
+        hsAxisZ->setEnabled(false);
+        sizePolicy.setHeightForWidth(hsAxisZ->sizePolicy().hasHeightForWidth());
+        hsAxisZ->setSizePolicy(sizePolicy);
+        hsAxisZ->setOrientation(Qt::Horizontal);
+
+        verticalLayout->addWidget(hsAxisZ);
+
         tabWidget = new QTabWidget(centralwidget);
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
         QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Expanding);
@@ -181,7 +212,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(MainWindow);

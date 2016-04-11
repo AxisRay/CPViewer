@@ -17,18 +17,21 @@
 
 class EasyImageSlice {
 public:
-    enum SliceDirection{AXIAL,SAGITTAL,CORONAL};
-    enum DataType{CT,OPT};
-    SliceDirection direction;
-    DataType type;
-    EasyImageSlice(vtkImageData* image,DataType type);
-    ~EasyImageSlice();
-    vtkSmartPointer<vtkImageActor> getActor(SliceDirection d);
-private:
     int extent[6];
     double spacing[3];
     double origin[3];
     double ScalarRange[2];
+    double center[3];
+
+    enum SliceDirection{AXIAL,SAGITTAL,CORONAL};
+    enum DataType{CT,OPT};
+    DataType type;
+    EasyImageSlice(vtkImageData* image,DataType type);
+    ~EasyImageSlice();
+    vtkSmartPointer<vtkImageActor> getActor(SliceDirection d);
+    void SetResliceAxesOrigin(double x, double y, double z);
+private:
+
 
     vtkSmartPointer<vtkImageData> image;
     vtkSmartPointer<vtkImageResliceToColors> axialReslice;
@@ -40,6 +43,8 @@ private:
     void InitReslice(vtkImageResliceToColors* reslice,SliceDirection direction);
 
     void InitColor();
+
+
 };
 
 
