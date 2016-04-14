@@ -22,6 +22,7 @@ public:
     double origin[3];
     double ScalarRange[2];
     double center[3];
+    double offset[3];
 
     enum SliceDirection{AXIAL,SAGITTAL,CORONAL};
     enum DataType{CT,OPT};
@@ -29,7 +30,10 @@ public:
     EasyImageSlice(vtkImageData* image,DataType type);
     ~EasyImageSlice();
     vtkSmartPointer<vtkImageActor> getActor(SliceDirection d);
-    void SetResliceAxesOrigin(double x, double y, double z);
+
+    void SetResliceAxesOrigin(SliceDirection d, double value);
+
+    void SetOffset(double x, double y, double z);
 private:
 
 

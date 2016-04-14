@@ -10,9 +10,21 @@ MainWindow::MainWindow(QWidget *parent) :
         ui(new Ui::MainWindow) {
     ui->setupUi(this);
     //connect(ui->pbLoadCT,SIGNAL(clicked()),this,SLOT(on_pbLoadCT_clicked()));
-    //connect(ui->hsAxisX,SIGNAL(valueChanged(int)),this,SLOT(on_slider_valueChanged(int)));
-    //connect(ui->hsAxisY,SIGNAL(valueChanged(int)),this,SLOT(on_slider_valueChanged(int)));
-    //connect(ui->hsAxisZ,SIGNAL(valueChanged(int)),this,SLOT(on_slider_valueChanged(int)));
+    connect(ui->hsAxisX, SIGNAL(valueChanged(int)), this, SLOT(ValueChanged(int)));
+    connect(ui->hsAxisY, SIGNAL(valueChanged(int)), this, SLOT(ValueChanged(int)));
+    connect(ui->hsAxisZ, SIGNAL(valueChanged(int)), this, SLOT(ValueChanged(int)));
+
+    connect(ui->dsOffsetX, SIGNAL(valueChanged(int)), this, SLOT(OffsetChangedX(int)));
+    connect(ui->dsOffsetY, SIGNAL(valueChanged(int)), this, SLOT(OffsetChangedY(int)));
+    connect(ui->dsOffsetZ, SIGNAL(valueChanged(int)), this, SLOT(OffsetChangedZ(int)));
+
+    connect(ui->hsOffsetX, SIGNAL(valueChanged(int)), this, SLOT(OffsetChangedX(int)));
+    connect(ui->hsOffsetY, SIGNAL(valueChanged(int)), this, SLOT(OffsetChangedY(int)));
+    connect(ui->hsOffsetZ, SIGNAL(valueChanged(int)), this, SLOT(OffsetChangedZ(int)));
+
+
+    ct_slice = NULL;
+    opt_slice = NULL;
     ct_reader = vtkSmartPointer<vtkMetaImageReader>::New();
     opt_reader = vtkSmartPointer<vtkMetaImageReader>::New();
     renderWin = vtkSmartPointer<vtkRenderWindow>::New();
@@ -89,7 +101,6 @@ void MainWindow::InitRenderWin(vtkRenderWindow* win){
     vtkSmartPointer<vtkRenderWindowInteractor> interactor =
             vtkSmartPointer<vtkRenderWindowInteractor>::New();
     interactor->SetInteractorStyle(imageStyle);
-    interactor->SetSize(100,100);
     win->SetInteractor(interactor);
     win->Render();
 }
@@ -135,6 +146,7 @@ void MainWindow::on_pbLoadOPT_clicked(){
     optRen->ResetCamera();
     renderWin->Render();
     InitSlider(opt_slice->extent);
+    InitOffsetSlider(opt_slice->extent);
 }
 
 void MainWindow::InitVolumeRender() {
@@ -150,34 +162,74 @@ void MainWindow::InitVolumeRender() {
 }
 
 void MainWindow::InitSlider(int* extent){
-    ui->hsAxisX->setMinimum(extent[0]);
-    ui->hsAxisX->setMaximum(extent[1]);
+    ui->hsAxisX->setRange(extent[0], extent[1]);
+    ui->hsAxisX->setValue(extent[1] / 2);
     ui->hsAxisX->setEnabled(true);
-    ui->hsAxisY->setMinimum(extent[2]);
-    ui->hsAxisY->setMaximum(extent[3]);
+    ui->hsAxisY->setRange(extent[2], extent[3]);
+    ui->hsAxisY->setValue(extent[3] / 2);
     ui->hsAxisY->setEnabled(true);
-    ui->hsAxisZ->setMinimum(extent[4]);
-    ui->hsAxisZ->setMaximum(extent[5]);
+    ui->hsAxisZ->setRange(extent[4], extent[5]);
+    ui->hsAxisZ->setValue(extent[5] / 2);
     ui->hsAxisZ->setEnabled(true);
 
 }
 void MainWindow::UpdateSlice(){
-
-
-
-}
-void MainWindow::on_hsAxisX_valueChanged(int value){
-    ct_slice->SetResliceAxesOrigin(ui->hsAxisX->value(),ct_slice->center[1],ct_slice->center[2]);
-    opt_slice->SetResliceAxesOrigin(ui->hsAxisX->value(),opt_slice->center[1],opt_slice->center[2]);
     sagittalWin->Render();
-}
-void MainWindow::on_hsAxisY_valueChanged(int value){
-    ct_slice->SetResliceAxesOrigin(ct_slice->center[0],ui->hsAxisY->value(),ct_slice->center[2]);
-    opt_slice->SetResliceAxesOrigin(opt_slice->center[0],ui->hsAxisY->value(),opt_slice->center[2]);
     coronalWin->Render();
-}
-void MainWindow::on_hsAxisZ_valueChanged(int value){
-    ct_slice->SetResliceAxesOrigin(ct_slice->center[0],ct_slice->center[1],ui->hsAxisZ->value());
-    opt_slice->SetResliceAxesOrigin(opt_slice->center[0],opt_slice->center[1],ui->hsAxisZ->value());
     axialWin->Render();
+}
+
+void MainWindow::opt_offset() {
+    opt_slice->SetOffset(ui->dsOffsetX->value(),
+                         ui->dsOffsetY->value(),
+                         ui->dsOffsetZ->value());
+    ValueChanged(0);
+}
+
+void MainWindow::ValueChanged(int value) {
+    if (ct_slice != NULL) {
+        ct_slice->SetResliceAxesOrigin(EasyImageSlice::SAGITTAL, ui->hsAxisX->value());
+        ct_slice->SetResliceAxesOrigin(EasyImageSlice::CORONAL, ui->hsAxisY->value());
+        ct_slice->SetResliceAxesOrigin(EasyImageSlice::AXIAL, ui->hsAxisZ->value());
+    }
+    if (opt_slice != NULL) {
+        opt_slice->SetResliceAxesOrigin(EasyImageSlice::SAGITTAL, ui->hsAxisX->value());
+        opt_slice->SetResliceAxesOrigin(EasyImageSlice::CORONAL, ui->hsAxisY->value());
+        opt_slice->SetResliceAxesOrigin(EasyImageSlice::AXIAL, ui->hsAxisZ->value());
+    }
+    UpdateSlice();
+}
+
+void MainWindow::InitOffsetSlider(int *extent) {
+    ui->dsOffsetX->setRange(-extent[1], extent[1]);
+    ui->dsOffsetY->setRange(-extent[3], extent[3]);
+    ui->dsOffsetZ->setRange(-extent[5], extent[5]);
+    ui->hsOffsetX->setRange(-extent[1], extent[1]);
+    ui->hsOffsetY->setRange(-extent[3], extent[3]);
+    ui->hsOffsetZ->setRange(-extent[5], extent[5]);
+    ui->dsOffsetX->setEnabled(true);
+    ui->dsOffsetY->setEnabled(true);
+    ui->dsOffsetZ->setEnabled(true);
+    ui->hsOffsetX->setEnabled(true);
+    ui->hsOffsetY->setEnabled(true);
+    ui->hsOffsetZ->setEnabled(true);
+}
+
+
+void MainWindow::OffsetChangedX(int value) {
+    ui->hsOffsetX->setValue(value);
+    ui->dsOffsetX->setValue(value);
+    opt_offset();
+}
+
+void MainWindow::OffsetChangedY(int value) {
+    ui->hsOffsetY->setValue(value);
+    ui->dsOffsetY->setValue(value);
+    opt_offset();
+}
+
+void MainWindow::OffsetChangedZ(int value) {
+    ui->hsOffsetZ->setValue(value);
+    ui->dsOffsetZ->setValue(value);
+    opt_offset();
 }

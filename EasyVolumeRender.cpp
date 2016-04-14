@@ -27,6 +27,7 @@ vtkSmartPointer<vtkVolume> EasyVolumeRender::GetVolume(){
             vtkSmartPointer<vtkGPUVolumeRayCastMapper>::New();
     volumeMapper->SetInputConnection(shiftScaleFilter->GetOutputPort());
     volume->SetMapper(volumeMapper);
+
     InitVolumeProperty(volumeProperty);
     volume->SetProperty(volumeProperty);
     return volume;

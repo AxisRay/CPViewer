@@ -47,17 +47,22 @@ private:
     void InitRenderWin(vtkRenderWindow* win);
     void InitVolumeRender();
     void InitSlider(int *extent);
+
+    void InitOffsetSlider(int *extent);
 private slots:
     void on_pbLoadCT_clicked();
     void on_pbLoadOPT_clicked();
-
     void UpdateSlice();
 
-    void on_hsAxisX_valueChanged(int value);
+    void ValueChanged(int value);
 
-    void on_hsAxisY_valueChanged(int value);
+    void OffsetChangedX(int value);
 
-    void on_hsAxisZ_valueChanged(int value);
+    void OffsetChangedY(int value);
+
+    void OffsetChangedZ(int value);
+
+    void opt_offset();
 };
 
 #endif // MAINWINDOW_H

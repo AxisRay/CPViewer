@@ -103,8 +103,25 @@ vtkSmartPointer<vtkImageActor> EasyImageSlice::getActor(SliceDirection d){
     }
     return actor;
 }
-void EasyImageSlice::SetResliceAxesOrigin(double x, double y, double z){
-    axialReslice->SetResliceAxesOrigin(x,y,z);
-    sagittalReslice->SetResliceAxesOrigin(x,y,z);
-    coronalReslice->SetResliceAxesOrigin(x,y,z);
+
+void EasyImageSlice::SetResliceAxesOrigin(SliceDirection d, double value) {
+    switch (d) {
+        case AXIAL:
+            axialReslice->SetResliceAxesOrigin(center[0] + offset[0], center[1] + offset[1], value + offset[2]);
+            break;
+        case CORONAL:
+            coronalReslice->SetResliceAxesOrigin(center[0] + offset[0], value + offset[1], center[2] + offset[2]);
+            break;
+        case SAGITTAL:
+            sagittalReslice->SetResliceAxesOrigin(value + offset[0], center[1] + offset[1], center[2] + offset[2]);
+            break;
+        default:
+            break;
+    }
+}
+
+void EasyImageSlice::SetOffset(double x, double y, double z) {
+    offset[0] = x;
+    offset[1] = y;
+    offset[2] = z;
 }
